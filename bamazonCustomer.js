@@ -38,12 +38,12 @@ var connection = mysql.createConnection({
             {
                 name: "quantity",
                 type: "input",
-                message: "What is the quantity?"
+                message: "Quantity desired?"
             }
         ])
         .then(function(answer) {
             console.log("\n" + "Item ID: " + answer.id);
-            console.log("Quantity purchase: " + answer.quantity + "\n");
+            console.log("Quantity purchased: " + answer.quantity + "\n");
 
             connection.query("SELECT * FROM products WHERE item_id = ?", [answer.id], function(error, data) {
                 console.table(data);
