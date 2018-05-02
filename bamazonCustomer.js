@@ -23,7 +23,7 @@ var connection = mysql.createConnection({
     connection.query("SELECT * FROM products", function(error, data) {
         console.log("\nWelcome to Bamazon!\n");
         console.table(data);
-        startPrompt();
+        updateData();
     })
   };
 
@@ -56,8 +56,50 @@ var connection = mysql.createConnection({
   };
 
   function updateData() {
+    connection.query("SELECT * FROM products", function(error, results) {
+        if (error) throw error;
+        inquirer  
+            .prompt ([
+                {
+                    name: "product",
+                    type: "list",
+                    choices: function() {
+                        let choiceArray = [];
+                        for (let i = 0; i < results.length; i++) {
+                            choiceArray.push(results[i].product_name);
+                        }
+                        return choiceArray;
+                    },
+                    message: "Which product would you like?"
+                },
+                {
+                    name: "quantity",
+                    type: "input",
+                    message: "Quantity desired?"
+                }
+            ])
+            .then(function(answer) {
+                console.table(results);
+                // get information of the chosen product
+                let chosenProduct;
+                for (let i = 0; i < results.length; i++) {
+                    if (results[i].product_name === answer.product) {
+                        chosenProduct = results[i];
+                        console.table(chosenProduct)  
+                    }
+                }
 
-  };
+                // determine if stock quantity is enough to fulfill answer.quantity
+
+
+
+
+
+
+            }) 
+
+    })// end of connection query
+  };// end of function updateData
 
   function deleteData() {
 
