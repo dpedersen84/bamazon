@@ -22,3 +22,5 @@ INSERT INTO products (product_name, department_name, price, stock_quantity) VALU
 INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES ("Microsoft Xbox", "Electronics", 200.25, 100);
 INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES ("Lightbulbs", "Lighting", 2.99, 1000);
 INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES ("Bear Mace", "Outdoors", 29.99, 45);
+
+SELECT * FROM products;
