@@ -79,24 +79,29 @@ var connection = mysql.createConnection({
                 }
             ])
             .then(function(answer) {
-                console.table(results);
+                // console.table(results);
+
                 // get information of the chosen product
                 let chosenProduct;
                 for (let i = 0; i < results.length; i++) {
+
                     if (results[i].product_name === answer.product) {
                         chosenProduct = results[i];
-                        console.table(chosenProduct)  
+                        console.table(chosenProduct)
+                        
+                        // For loop to determine sale successful
+                        if (answer.quantity > results[i].stock_quantity) {
+                            console.log("Purchase Denied: Insufficient stock quantity")
+                        } else {
+                            console.log("Purchase Successful");
+
+                            // calculate total cost of purchase
+                            let totalCost = answer.quantity * results[i].price
+                            console.log("Total Cost of purchase: " + "$" + totalCost)
+                        }
                     }
-                }
-
-                // determine if stock quantity is enough to fulfill answer.quantity
-
-
-
-
-
-
-            }) 
+                };
+            }); 
 
     })// end of connection query
   };// end of function updateData
