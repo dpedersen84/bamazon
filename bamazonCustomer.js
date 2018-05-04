@@ -67,11 +67,27 @@ function customerOrder() {
                             customerOrder();
 
                         } else {
-                            console.log("Purchase Successful");
+                            console.log("Purchase Successful!");
 
                             // calculate total cost of purchase
                             let totalCost = answer.quantity * results[i].price
-                            console.log("Total Cost of purchase: " + "$" + totalCost)
+                            console.log("Total Cost: " + "$" + totalCost)
+
+                            // update quantities
+                            // connection.query(
+                            //     "UPDATE products SET ? WHERE ?",
+                            //     [
+                            //         {
+                            //             stock_quantity: answer.quantity
+                            //         }, 
+                            //         {
+                            //             id: chosenProduct.id
+                            //         }
+                            //     ], 
+                            //     function(err) {
+                            //         if (err) throw err;
+                                
+                            // }
                             customerExit();
                         }
                     }
@@ -81,6 +97,6 @@ function customerOrder() {
 };
 
 function customerExit() {
-    console.log("Thank you for your purchase!");
+    console.log("Thank you!");
     connection.end();
 };
