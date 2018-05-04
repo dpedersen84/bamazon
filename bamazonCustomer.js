@@ -5,57 +5,29 @@ const cTable = require("console.table");
 var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
-  
+
     // Your username
     user: "root",
-  
+
     // Your password
     password: "", // change me when done testing
     database: "bamazon"
-  });
-  
-  connection.connect(function(err) {
-    if (err) throw err;
-    displayTable();
-  });
+});
 
-  function displayTable() {
+connection.connect(function(err) {
+    if (err) throw err;
+    displayProducts();
+});
+
+function displayProducts() {
     connection.query("SELECT * FROM products", function(error, data) {
         console.log("\nWelcome to Bamazon!\n");
         console.table(data);
-        updateData();
+        customerOrder();
     })
-  };
+};
 
-  function startPrompt() {
-    inquirer
-        .prompt ([
-            {
-                name: "id",
-                type: "input",
-                message: "What is the product ID?"
-            },
-            {
-                name: "quantity",
-                type: "input",
-                message: "Quantity desired?"
-            }
-        ])
-        .then(function(answer) {
-            console.log("\n" + "Item ID: " + answer.id);
-            console.log("Quantity purchased: " + answer.quantity + "\n");
-
-            connection.query("SELECT * FROM products WHERE item_id = ?", [answer.id], function(error, data) {
-                console.table(data);
-            })
-        })
-  };
-
-  function createData() {
-
-  };
-
-  function updateData() {
+function customerOrder() {
     connection.query("SELECT * FROM products", function(error, results) {
         if (error) throw error;
         inquirer  
@@ -89,27 +61,26 @@ var connection = mysql.createConnection({
                         chosenProduct = results[i];
                         console.table(chosenProduct)
                         
-                        // For loop to determine sale successful
+                        // Determine if sale is successful
                         if (answer.quantity > results[i].stock_quantity) {
                             console.log("Purchase Denied: Insufficient stock quantity")
+                            customerOrder();
+
                         } else {
                             console.log("Purchase Successful");
 
                             // calculate total cost of purchase
                             let totalCost = answer.quantity * results[i].price
                             console.log("Total Cost of purchase: " + "$" + totalCost)
+                            customerExit();
                         }
                     }
                 };
             }); 
-
     })// end of connection query
-  };// end of function updateData
+};
 
-  function deleteData() {
-
-  };
-
-  function readData() {
-
-  };
+function customerExit() {
+    console.log("Thank you for your purchase!");
+    connection.end();
+};
