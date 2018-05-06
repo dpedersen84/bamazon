@@ -19,7 +19,11 @@ connection.connect(function(err) {
     managerView();
 });
 
+// ===================================================================================
+// Manager Screen
+// ===================================================================================
 function managerView() {
+    console.log("\nWelcome to the Bamazon Manager Screen!\n");
     connection.query("SELECT * FROM products", function (error, results) {
         if (error) throw error;
         inquirer
@@ -42,12 +46,10 @@ function managerView() {
                     break;
 
                     case "View Low Inventory":
-                    console.log("Viewing Low Inventory...");
                     lowInventory();
                     break;
 
                     case "Add to Inventory":
-                    console.log("Adding Inventory...");
                     addInventory();
                     break;
 
@@ -59,19 +61,31 @@ function managerView() {
     })
 };
 
+// ===================================================================================
+// Product Display
+// ===================================================================================
 function displayProducts() {
     connection.query("SELECT * FROM products", function(error, data) {
-        console.log("Viewing Products...\n");
-        // console.log("\nWelcome Boss!\n");
+        console.log("\nViewing Products...\n");
         console.table(data);
-        // productView();
+        connection.end();
     })
 };
 
+// ===================================================================================
+// View Low Inventory
+// ===================================================================================
 function lowInventory() {
-    connection.query("SELECT * FROM products ")
+    connection.query("SELECT * FROM products WHERE stock_quantity < 5", function(err, res) {
+        console.log("\nViewing Low Inventory...\n");
+        console.table(res);
+        connection.end();
+    })
 }
 
+// ===================================================================================
+// Add New Products
+// ===================================================================================
 function newProduct() {
     inquirer
         .prompt([
@@ -106,15 +120,18 @@ function newProduct() {
                     stock_quantity: answer.stock
                 },
                 function(err, res) {
-                console.log(res.affectedRows + " product(s) added!\n");
-                displayProducts();
-                connection.end();
+                    console.log(res.affectedRows + " product(s) added!\n");
+                    displayProducts();
                 }
             )
         })
 };
 
+// ===================================================================================
+// Add Inventory For Specific Product
+// ===================================================================================
 function addInventory() {
+    console.log("\nAdding to Inventory...\n");
     connection.query("SELECT * FROM products", function(err, res) {
         if (err) throw err;
         inquirer    
@@ -138,16 +155,9 @@ function addInventory() {
                 }
             ])
             .then(function(answer){
-
                 for (let i = 0; i < res.length; i++) {
                     if(res[i].product_name === answer.product) {
-
-                        // console.log(res[i].stock_quantity);
-
                         let newStockQuantity = res[i].stock_quantity + parseInt(answer.quantity);
-
-                        // console.log(newStockQuantity);
-
                         connection.query("UPDATE products SET ? WHERE ?", 
                         [
                             {
@@ -160,10 +170,15 @@ function addInventory() {
                         function(err, res) {
                             console.log("Inventory Added!\n");
                             displayProducts();
-                            connection.end();
                         })
                     }   
                 }
             })
     })
 };
+
+// ===================================================================================
+// To-Do List
+// Clean up code
+// Add necessary comments
+// ===================================================================================

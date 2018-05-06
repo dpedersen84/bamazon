@@ -19,15 +19,21 @@ connection.connect(function(err) {
     displayProducts();
 });
 
+// ===================================================================================
+// Product Display In Table Format
+// ===================================================================================
 function displayProducts() {
     connection.query("SELECT * FROM products", function(error, data) {
-        console.log("\nWelcome to Bamazon!\n");
         console.table(data);
         customerOrder();
     })
 };
 
+// ===================================================================================
+// Customer Order Screen
+// ===================================================================================
 function customerOrder() {
+    console.log("Welcome to Bamazon!\n");
     connection.query("SELECT * FROM products", function(error, results) {
         if (error) throw error;
         inquirer  
@@ -51,14 +57,12 @@ function customerOrder() {
                 }
             ])
             .then(function(answer) {
-                // console.table(results);
                 // get information of the chosen product
                 let chosenProduct;
                 for (let i = 0; i < results.length; i++) {
                     if (results[i].product_name === answer.product) {
                         chosenProduct = results[i];
-                        // console.table(chosenProduct)
-                        console.log(`\nYou purchased ${answer.quantity} ${chosenProduct.product_name}`);
+                        console.log(`\nYou purchased ${answer.quantity} ${chosenProduct.product_name}(s)`);
                         
                         // Determine if sale is successful
                         if (answer.quantity > results[i].stock_quantity) {
@@ -66,14 +70,13 @@ function customerOrder() {
                             customerOrder();
                         } else {
                             console.log("\nPurchase Successful!");
-                            // calculate total cost of purchase
+
+                            // Calculate total cost of purchase
                             let totalCost = answer.quantity * results[i].price
                             console.log("\nTotal Cost: " + "$" + totalCost + "\n")
                             let newQuantity = (results[i].stock_quantity - answer.quantity)
-                            // console.log(answer.quantity);
-                            // console.log(results[i].stock_quantity);
-                            // console.log(newQuantity);
-                            // update quantities
+
+                            // Update quantities
                             connection.query(
                                 "UPDATE products SET ? WHERE ?",
                                 [
@@ -90,21 +93,25 @@ function customerOrder() {
                                         console.table(res);
                                         customerExit();
                                     })
-                                    // connection.query("SELECT ?? FROM products",[["product_name", "stock_quantity"]], function(err, res){
-                                    //     console.table(res);
-                                    // })
-                                
-                            })
+                            });
                         }
                     }
                 };
             }); 
-    })// end of connection query
+    })
 };
 
+// ===================================================================================
+// End Customer Transaction
+// ===================================================================================
 function customerExit() {
     console.log("Thank you!");
     connection.end();
 };
 
-// sql injections <-- research
+// ===================================================================================
+// To-Do List
+// Clean up code
+// Add necessary comments
+// Research SQL Injections
+// ===================================================================================
