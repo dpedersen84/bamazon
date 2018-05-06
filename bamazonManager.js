@@ -108,6 +108,7 @@ function newProduct() {
                 function(err, res) {
                 console.log(res.affectedRows + " product(s) added!\n");
                 displayProducts();
+                connection.end();
                 }
             )
         })
@@ -137,8 +138,32 @@ function addInventory() {
                 }
             ])
             .then(function(answer){
-                console.log(answer);
+
+                for (let i = 0; i < res.length; i++) {
+                    if(res[i].product_name === answer.product) {
+
+                        // console.log(res[i].stock_quantity);
+
+                        let newStockQuantity = res[i].stock_quantity + parseInt(answer.quantity);
+
+                        // console.log(newStockQuantity);
+
+                        connection.query("UPDATE products SET ? WHERE ?", 
+                        [
+                            {
+                                stock_quantity: newStockQuantity
+                            },
+                            {
+                                product_name: answer.product
+                            }
+                        ],
+                        function(err, res) {
+                            console.log("Inventory Added!\n");
+                            displayProducts();
+                            connection.end();
+                        })
+                    }   
+                }
             })
     })
-    
-}
+};
