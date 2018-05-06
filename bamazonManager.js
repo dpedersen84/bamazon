@@ -16,18 +16,10 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err) {
     if (err) throw err;
-    displayProducts();
+    managerView();
 });
 
-function displayProducts() {
-    connection.query("SELECT * FROM products", function(error, data) {
-        console.log("\nWelcome Boss!\n");
-        console.table(data);
-        productView();
-    })
-};
-
-function productView() {
+function managerView() {
     connection.query("SELECT * FROM products", function (error, results) {
         if (error) throw error;
         inquirer
@@ -46,32 +38,107 @@ function productView() {
                 switch (action) {
 
                     case "View Products for Sale":
-                    console.log("Viewing Products...");
+                    displayProducts();
                     break;
 
                     case "View Low Inventory":
                     console.log("Viewing Low Inventory...");
+                    lowInventory();
                     break;
 
                     case "Add to Inventory":
                     console.log("Adding Inventory...");
+                    addInventory();
                     break;
 
                     case "Add New Product":
-                    console.log("Adding Product...");
+                    newProduct();
                 }
                 
             })
-
-
-
-
-
-
-
-
-
-
     })
+};
 
+function displayProducts() {
+    connection.query("SELECT * FROM products", function(error, data) {
+        console.log("Viewing Products...\n");
+        // console.log("\nWelcome Boss!\n");
+        console.table(data);
+        // productView();
+    })
+};
+
+function lowInventory() {
+    connection.query("SELECT * FROM products ")
+}
+
+function newProduct() {
+    inquirer
+        .prompt([
+            {
+                name: "product",
+                type: "input",
+                message: "Product?"
+            },
+            {
+                name: "department",
+                type: "input",
+                message: "Department?"
+            },
+            {
+                name: "price",
+                type: "input",
+                message: "Price?"
+            },
+            {
+                name: "stock",
+                type: "input",
+                message: "Starting stock?"
+            },
+        ])
+        .then(function(answer) {
+            console.log("\nAdding Product...\n");
+            connection.query("INSERT INTO products SET ?",
+                {
+                    product_name: answer.product,
+                    department_name: answer.department,
+                    price: answer.price,
+                    stock_quantity: answer.stock
+                },
+                function(err, res) {
+                console.log(res.affectedRows + " product(s) added!\n");
+                displayProducts();
+                }
+            )
+        })
+};
+
+function addInventory() {
+    connection.query("SELECT * FROM products", function(err, res) {
+        if (err) throw err;
+        inquirer    
+            .prompt([
+                {
+                    name: "product",
+                    type: "list",
+                    message: "Which product would you like to add inventory to?",
+                    choices: function() {
+                        let choiceArray = [];
+                        for (let i = 0; i < res.length; i++) {
+                            choiceArray.push(res[i].product_name);
+                        }
+                        return choiceArray;
+                    }
+                },
+                {
+                    name: "quantity",
+                    type: "input",
+                    message: "How much inventory would you like to add?"
+                }
+            ])
+            .then(function(answer){
+                console.log(answer);
+            })
+    })
+    
 }
